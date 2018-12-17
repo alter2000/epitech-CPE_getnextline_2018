@@ -18,6 +18,19 @@
 #  define READ_SIZE 100
 # endif // READ_SIZE
 
+typedef struct fd_s {
+    int fd;
+    int lnbuflen;
+    int lnbufidx;
+    int nextch;
+    int rbuflen;
+    int rbufidx;
+    char *lnbuf;
+    char *tmp;
+    char rbuf[READ_SIZE];
+    struct fd_s *next;
+} gnl_t;
+
 void *regib(char *, int);
 char *my_strncpy(char *, char const *, int);
 int my_strlen(char *);

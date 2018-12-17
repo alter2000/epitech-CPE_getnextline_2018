@@ -21,3 +21,17 @@ char *get_next_line(int fd)
     }
     return res;
 }
+
+gnl_t *mkstruct(gnl_t *former, int fd)
+{
+    gnl_t *file_info = gib(sizeof(*file_info));
+
+    file_info->fd = fd;
+    file_info->lnbuflen = 0;
+    file_info->nextch = 0;
+    file_info->rbuflen = read(fd, file_info->rbuf, READ_SIZE);
+    file_info->rbufidx = 0;
+    file_info->next = former;
+    return file_info;
+}
+
