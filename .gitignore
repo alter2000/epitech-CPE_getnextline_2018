@@ -1,0 +1,9 @@
+**/*.o
+**/*.gc*
+**/libmy.a
+**/vgcore*
+push_swap
+idk.c
+**/*.out
+unit_tests
+tags
