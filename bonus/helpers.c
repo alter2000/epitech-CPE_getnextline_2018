@@ -1,6 +1,15 @@
 
 #include "get_next_line.h"
 
+static int my_strlen(char const *s)
+{
+    int i = 0;
+
+    while (s && s[i])
+        i++;
+    return i;
+}
+
 void *gib(size_t n)
 {
     char *p = 0;
@@ -30,25 +39,20 @@ void *regib(char *s, int extra)
     return newstr;
 }
 
-int my_strlen(char *s)
+char *my_strmerge(char *dest, char const *src)
 {
-    int i = 0;
+    int i;
+    int len_1 = my_strlen(src);
+    int len_2 = my_strlen(dest);
+    char *newstr = gib(sizeof(char) * (len_1 + len_2));
 
-    while (s && s[i])
-        i++;
-    return i;
-}
-
-char *my_strncat(char *dest, char const *src, int n)
-{
-    int i = 0;
-    char *newdest = regib(dest, my_strlen(dest));
-    char *len = newdest + my_strlen(dest);
-
-    for (; src[i] && i < n; i++)
-        len[i] = src[i];
-    len[i] = 0;
-    return newdest;
+    if (!src || !dest)
+        return 0;
+    for (i = 0; i < len_1; i++)
+        newstr[i] = src[i];
+    for (int j = 0; j < len_2; j++)
+        newstr[i] = dest[j];
+    return newstr;
 }
 
 int is_in(char const elem, char const *set)
