@@ -6,35 +6,32 @@
 */
 
 #ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#    define GET_NEXT_LINE_H
 
-# include <fcntl.h>
-# include <stddef.h>
-# include <stdlib.h>
-# include <sys/types.h>
-# include <unistd.h>
+#    include <fcntl.h>
+#    include <stddef.h>
+#    include <stdlib.h>
+#    include <sys/types.h>
+#    include <unistd.h>
 
-# ifndef READ_SIZE
-#  define READ_SIZE 100
-# endif // READ_SIZE
+#    ifndef READ_SIZE
+#        define READ_SIZE 100
+#    endif // READ_SIZE
 
 typedef struct fd_s {
     int fd;
     int lnbuflen;
-    int lnbufidx;
-    int nextch;
     int rbuflen;
-    int rbufidx;
     char *lnbuf;
-    char *tmp;
-    char rbuf[READ_SIZE];
+    char rbuf[READ_SIZE + 2];
     struct fd_s *next;
 } gnl_t;
 
-void *regib(char *, int);
-char *my_strncpy(char *, char const *, int);
-int my_strlen(char *);
 void *gib(size_t);
+void *regib(char *, int);
+int my_strlen(char *);
+char *my_strncat(char *, char const *, int);
+int is_in(char const, char const *);
 
 char *get_next_line(int);
 

@@ -5,33 +5,67 @@
 ** GNL implementation
 */
 
+#include <stdio.h>
 #include "get_next_line.h"
+
+static gnl_t *ret_file(int const fd, gnl_t **f)
+{
+    gnl_t *tmp;
+    gnl_t *file_info;
+
+    for (tmp = *f; tmp; tmp = tmp->next)
+        if (tmp->fd == fd)
+            return tmp;
+    file_info = gib(sizeof(*file_info));
+    file_info->fd = fd;
+    file_info->lnbuf = gib(sizeof(char) * READ_SIZE);
+    if (!*f) {
+        *f = file_info;
+    } else {
+        for (tmp = *f; tmp && tmp->next; tmp = tmp->next);
+        tmp->next = file_info;
+    }
+    return *f;
+}
+
+static void read_till_newline(gnl_t *cur)
+{
+    for (cur->rbuflen = read(cur->fd, cur->rbuf, READ_SIZE); \
+            cur->rbuflen > 0; \
+            cur->rbuflen = read(cur->fd, cur->rbuf, READ_SIZE)) {
+        cur->rbuf[cur->rbuflen] = 0;
+        if (is_in('\n', cur->rbuf))
+            break;
+        for (int i = 0; cur->rbuf[i]; i++, cur->lnbuflen++)
+            cur->lnbuf[cur->lnbuflen] = cur->rbuf[i];
+    }
+}
 
 char *get_next_line(int fd)
 {
-    static char buf[READ_SIZE] = {0};
-    char *res = gib(READ_SIZE);
-    char *tmp;
-    int ret = (fd) ? read(fd, buf, READ_SIZE) : 0;
+    static gnl_t *files;
+    gnl_t *cur = ret_file(fd, &files);
 
-    if (!fd)
+    if (fd == -1 || read(cur->fd, cur->rbuf, 0) < 0)
         return 0;
-    while (ret > 0) {
-        buf[ret] = 0;
-    }
-    return res;
+    read_till_newline(cur);
+    for (int i = 0; cur->rbuf[i] && cur->rbuf[i] != '\n'; i++, cur->lnbuflen++)
+        cur->lnbuf[cur->lnbuflen] = cur->rbuf[i];
+    cur->lnbuf[cur->lnbuflen] = 0;
+    for (int i = 0; i < cur->rbuflen; i++)
+        cur->rbuf[i] = 0;
+    return cur->lnbuf;
 }
 
-gnl_t *mkstruct(gnl_t *former, int fd)
+int main(void)
 {
-    gnl_t *file_info = gib(sizeof(*file_info));
-
-    file_info->fd = fd;
-    file_info->lnbuflen = 0;
-    file_info->nextch = 0;
-    file_info->rbuflen = read(fd, file_info->rbuf, READ_SIZE);
-    file_info->rbufidx = 0;
-    file_info->next = former;
-    return file_info;
+    int fd = open("./get_next_line.c", O_RDONLY);
+    char *s1 = get_next_line(fd);
+    char *s2 = get_next_line(fd);
+    for (int i = 0; s1[i]; i++)
+        write(1, s1 + i, 1);
+    write(1, "\n", 1);
+    for (int i = 0; s2[i]; i++)
+        write(1, s2 + i, 1);
+    write(1, "\n", 1);
 }
-
