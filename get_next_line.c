@@ -56,16 +56,3 @@ char *get_next_line(int fd)
         cur->rbuf[i] = 0;
     return cur->lnbuf;
 }
-
-int main(void)
-{
-    int fd = open("./get_next_line.c", O_RDONLY);
-    char *s1 = get_next_line(fd);
-    char *s2 = get_next_line(fd);
-    for (int i = 0; s1[i]; i++)
-        write(1, s1 + i, 1);
-    write(1, "\n", 1);
-    for (int i = 0; s2[i]; i++)
-        write(1, s2 + i, 1);
-    write(1, "\n", 1);
-}
