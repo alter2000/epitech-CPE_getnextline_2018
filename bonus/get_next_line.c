@@ -27,56 +27,45 @@ static gnl_t *ret_file(int const fd, gnl_t **f)
     return *f;
 }
 
-static void read_till_newline(gnl_t *cur, char *lnbuf, int lnbuflen, char *buf)
+static char *append(char *lnbuf, int n, gnl_t *f)
 {
-    for (int i = 0; i < cur->rbuflen; i++)
-        lnbuf[i] = cur->rbuf[i];
-    for (int i = 0; i < cur->rbuflen; i++)
-        cur->rbuf[i] = 0;
-    cur->rbuflen = 0;
-    for (int i = 0; buf[i] && buf[i] != '\n'; i++)
-        lnbuf[lnbuflen] = buf[i];
-    for (cur->rbuflen = read(cur->fd, buf, READ_SIZE); \
-            cur->rbuflen > 0; \
-            cur->rbuflen = read(cur->fd, buf, READ_SIZE)) {
-        buf[cur->rbuflen] = 0;
-        if (is_in('\n', buf))
-            return;
-        for (int i = 0; buf[i]; i++, lnbuflen++)
-            lnbuf[lnbuflen] = buf[i];
+    int oldlen = my_strlen(lnbuf);
+    char *newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
+
+    my_strncpy(newlen, lnbuf, oldlen);
+    newlen[oldlen + n] = 0;
+    my_strncpy(newlen + oldlen, f->rbuf + f->ridx, n);
+    if (lnbuf)
+        free(lnbuf);
+    f->ridx = f->ridx + (n + 1);
+    return (newlen);
+}
+
+char *get_next_delim(const int fd, const int ch)
+{
+    static gnl_t *all_f;
+    static int readret = 0;
+    gnl_t *f = ret_file(fd, &all_f);
+    int n = 0;
+    char *lnbuf = 0;
+
+    while (1) {
+        if (readret <= f->ridx) {
+            f->ridx = 0;
+            n = 0;
+            readret = read(fd, f->rbuf, READ_SIZE);
+            if (readret <= 0)
+                return (readret == 0) ? lnbuf : 0;
+        }
+        if (f->rbuf[f->ridx + n] == ch)
+            return append(lnbuf, n, f);
+        if (f->ridx + n == readret - 1)
+            lnbuf = append(lnbuf, n + 1, f);
+        n++;
     }
 }
 
-char *get_next_line(int fd)
+char *get_next_line(const int fd)
 {
-    char buf[READ_SIZE + 1] = {0};
-    char *lnbuf = gib(sizeof(char) * READ_SIZE);
-    static gnl_t *files;
-    gnl_t *cur = ret_file(fd, &files);
-    int i = 0;
-    int lnbuflen = 0;
-
-    if (fd == -1 || read(cur->fd, buf, 0) < 0)
-        return 0;
-    read_till_newline(cur, lnbuf, lnbuflen, buf);
-    for (; buf[i] && buf[i] != '\n'; i++, lnbuflen++)
-        lnbuf[lnbuflen] = buf[i];
-    lnbuf[lnbuflen] = 0;
-    while (buf[i] && buf[i] != '\n') i++;
-    for (; i < cur->rbuflen; buf[i++] = 0)
-        cur->rbuf[i] = buf[i];
-    return lnbuf;
-}
-
-int main(void)
-{
-    int f = open("./get_next_line.c", O_RDONLY);
-    char *s1 = get_next_line(f);
-    char *s2 = get_next_line(f);
-
-    for (int i = 0; s1[i]; i++)
-        write(1, s1 + i, 1);
-    write(1, "\n", 1);
-    for (int i = 0; s2[i]; i++)
-        write(1, s2 + i, 1);
+    return get_next_delim(fd, '\n');
 }

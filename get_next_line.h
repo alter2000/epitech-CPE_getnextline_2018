@@ -24,11 +24,6 @@ typedef struct fd_s {
     char rbuf[READ_SIZE + 2];
 } gnl_t;
 
-void *gib(size_t);
-void *regib(char *, int);
-char *my_strmerge(char *, char const *);
-int is_in(char const, char const *);
-
 char *get_next_line(int);
 
 #endif // GET_NEXT_LINE_H

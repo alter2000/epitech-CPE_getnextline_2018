@@ -20,17 +20,17 @@
 
 typedef struct fd_s {
     int fd;
+    int ridx;
     int rbuflen;
-    int lnbuflen;
     char rbuf[READ_SIZE + 2];
     struct fd_s *next;
 } gnl_t;
 
+int my_strlen(char const *);
+char *my_strncpy(char *, char const *, int);
 void *gib(size_t);
-void *regib(char *, int);
-char *my_strmerge(char *, char const *);
-int is_in(char const, char const *);
 
 char *get_next_line(int);
+char *get_next_delim(int, int);
 
 #endif // GET_NEXT_LINE_H

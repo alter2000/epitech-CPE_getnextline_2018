@@ -16,7 +16,7 @@ static int my_strlen(char const *s)
     return i;
 }
 
-char *my_strncpy(char *dest, char const *src, int n)
+static char *my_strncpy(char *dest, char const *src, int n)
 {
     int i = 0;
 
