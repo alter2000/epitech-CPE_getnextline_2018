@@ -9,9 +9,7 @@
 #    define GET_NEXT_LINE_H
 
 #    include <fcntl.h>
-#    include <stddef.h>
 #    include <stdlib.h>
-#    include <sys/types.h>
 #    include <unistd.h>
 
 #    ifndef READ_SIZE
