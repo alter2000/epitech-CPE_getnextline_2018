@@ -15,7 +15,7 @@
 #    include <unistd.h>
 
 #    ifndef READ_SIZE
-#        define READ_SIZE 100
+#        define READ_SIZE (20)
 #    endif // READ_SIZE
 
 typedef struct fd_s {

@@ -24,7 +24,7 @@ static gnl_t *ret_file(int const fd, gnl_t **f)
         for (tmp = *f; tmp && tmp->next; tmp = tmp->next);
         tmp->next = file_info;
     }
-    return *f;
+    return file_info;
 }
 
 static char *append(char *lnbuf, int n, gnl_t *f)
@@ -37,7 +37,7 @@ static char *append(char *lnbuf, int n, gnl_t *f)
     my_strncpy(newlen + oldlen, f->rbuf + f->ridx, n);
     if (lnbuf)
         free(lnbuf);
-    f->ridx = f->ridx + (n + 1);
+    f->ridx += n + 1;
     return (newlen);
 }
 

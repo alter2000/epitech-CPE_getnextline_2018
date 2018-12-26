@@ -1,9 +1,11 @@
-**/*.o
-**/*.gc*
-**/libmy.a
-**/vgcore*
-push_swap
+*.o
+*.gc*
+libmy.a
+vgcore*
+a.out
 idk.c
+l1
+l2
 **/*.out
 unit_tests
 tags
