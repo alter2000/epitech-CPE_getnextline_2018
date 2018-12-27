@@ -12,48 +12,20 @@
 
 #include "../get_next_line.h"
 
-int fd =  -1;
-int fd2 =  -1;
-
-void  open_file(void)
+Test(get_next_line, read_line_3)
 {
-    fd = open("tests/blag.md", O_RDONLY);
-    cr_redirect_stdout();
-}
+    int fd = open("./tests/blag.md", O_RDONLY);
 
-void open_other_file(void)
-{
-    fd = open("tests/blag.md", O_RDONLY);
-    fd2 = open("tests/keks", O_RDONLY);
-    cr_redirect_stdout();
-}
-
-void close_other_file(void)
-{
-    if (fd !=  -1)
-        close(fd);
-    fd = -1;
-    if (fd2 != -1)
-        close(fd2);
-    fd2 = -1;
-}
-
-void close_file(void)
-{
-    if (fd !=  -1)
-        close(fd);
-    fd = -1;
-}
-
-Test(get_next_line, read_line_3, .init = open_file, .fini = close_file)
-{
     cr_expect_str_eq(get_next_line(fd), "# Ligaturizer #");
     cr_expect_str_eq(get_next_line(fd), "");
     cr_expect_str_eq(get_next_line(fd), "![](images/banner.png)");
+    close(fd);
 }
 
-Test(get_next_line, loop, .init = open_file, .fini = close_file)
+Test(get_next_line, loop)
 {
+    int fd = open("tests/blag.md", O_RDONLY);
+
     for (int i = 0; i < 6; i++)
         get_next_line(fd);
 
@@ -63,12 +35,15 @@ Test(get_next_line, loop, .init = open_file, .fini = close_file)
         "TrueType or OpenType font. (Note that the ligatures are "
         "scale-corrected, but otherwise copied as is from Fira Code; it "
         "doesn't create new ligature graphics based on the font you're "
-        "modifying.)");
+        "modifying.). You need a l o n g b o a r d to make a l o n g l i n e");
+    close(fd);
 }
 
-Test(get_next_line, second_file, \
-        .init = open_other_file, .fini = close_other_file)
+Test(get_next_line, second_file)
 {
+    int fd = open("tests/blag.md", O_RDONLY);
+    int fd2 = open("tests/gnl.c", O_RDONLY);
+
     for (int i = 0; i < 6; i++)
         get_next_line(fd);
     cr_expect_str_eq(get_next_line(fd), \
@@ -77,6 +52,24 @@ Test(get_next_line, second_file, \
         "TrueType or OpenType font. (Note that the ligatures are "
         "scale-corrected, but otherwise copied as is from Fira Code; it "
         "doesn't create new ligature graphics based on the font you're "
-        "modifying.)");
-    cr_expect_str_eq(get_next_line(fd2), "yet another file to test switching");
+        "modifying.). You need a l o n g b o a r d to make a l o n g l i n e");
+    cr_expect_str_eq(get_next_line(fd2), "/*");
+    close(fd);
+    close(fd2);
+}
+
+Test(get_next_line, invalid_fd)
+{
+    char *p = get_next_line(-1);
+
+    cr_expect_eq(p, 0);
+}
+
+Test(get_next_line, empty)
+{
+    int f = open("./tests/empty", O_RDONLY);
+    char *p = get_next_line(f);
+
+    cr_expect_eq(p, 0);
+    close(f);
 }

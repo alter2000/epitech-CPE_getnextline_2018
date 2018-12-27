@@ -7,15 +7,6 @@
 
 #include "get_next_line.h"
 
-static int my_strlen(char const *s)
-{
-    int i = 0;
-
-    while (s && s[i])
-        i++;
-    return i;
-}
-
 static char *my_strncpy(char *dest, char const *src, int n)
 {
     int i = 0;
@@ -25,22 +16,29 @@ static char *my_strncpy(char *dest, char const *src, int n)
     for (; src[i] && i < n; i++)
         dest[i] = src[i];
     if (i > n)
-        dest[i] = '\0';
+        dest[i] = 0;
     return dest;
 }
 
 static char *append(char *lnbuf, int n, gnl_t *f)
 {
-    int oldlen = my_strlen(lnbuf);
-    char *newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
+    int i = 0;
+    int oldlen;
+    char *newlen;
 
+    while (lnbuf && lnbuf[i])
+        i++;
+    oldlen = i;
+    newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
+    while (!newlen)
+        newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
     my_strncpy(newlen, lnbuf, oldlen);
     newlen[oldlen + n] = 0;
     my_strncpy(newlen + oldlen, f->rbuf + f->ridx, n);
     if (lnbuf)
         free(lnbuf);
-    f->ridx = f->ridx + (n + 1);
-    return (newlen);
+    f->ridx += n + 1;
+    return newlen;
 }
 
 char *get_next_line(const int fd)
