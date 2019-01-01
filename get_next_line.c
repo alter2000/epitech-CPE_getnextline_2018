@@ -56,7 +56,7 @@ char *get_next_line(const int fd)
             if (readret <= 0)
                 return (readret == 0) ? lnbuf : 0;
         }
-        if (f.rbuf[f.ridx + n] == '\n')
+        if (f.rbuf[f.ridx + n] == '\n' || f.rbuf[f.ridx + n] == EOF)
             return append(lnbuf, n, &f);
         if (f.ridx + n == readret - 1)
             lnbuf = append(lnbuf, n + 1, &f);

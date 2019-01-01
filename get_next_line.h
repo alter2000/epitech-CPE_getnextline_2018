@@ -11,6 +11,7 @@
     #include <fcntl.h>
     #include <stdlib.h>
     #include <unistd.h>
+    #include <stdio.h>
 
     #ifndef READ_SIZE
         #define READ_SIZE (100)
@@ -19,7 +20,7 @@
 typedef struct fd_s {
     int ridx;
     int rbuflen;
-    char rbuf[READ_SIZE + 2];
+    signed char rbuf[READ_SIZE + 2];
 } gnl_t;
 
 char *get_next_line(int);
