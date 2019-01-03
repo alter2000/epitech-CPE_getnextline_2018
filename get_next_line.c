@@ -48,6 +48,7 @@ char *get_next_line(const int fd)
     int n = 0;
     char *lnbuf = 0;
 
+    if (READ_SIZE < 1) return 0;
     while (1) {
         if (readret <= f.ridx) {
             f.ridx = 0;
