@@ -14,19 +14,19 @@
 
 Test(get_next_line, read_line_3)
 {
-    int fd = open("./tests/blag.md", O_RDONLY);
+    int fd = open("./tests/blag.txt", O_RDONLY);
 
-    cr_expect_str_eq(get_next_line(fd), "# Ligaturizer #");
-    cr_expect_str_eq(get_next_line(fd), "");
-    cr_expect_str_eq(get_next_line(fd), "![](images/banner.png)");
+    cr_expect_str_eq(get_next_line(fd), "##");
+    cr_expect_str_eq(get_next_line(fd), "## EPITECH PROJECT, 2019");
+    cr_expect_str_eq(get_next_line(fd), "## CPE_getnextline_2018");
     close(fd);
 }
 
 Test(get_next_line, loop)
 {
-    int fd = open("tests/blag.md", O_RDONLY);
+    int fd = open("tests/blag.txt", O_RDONLY);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 13; i++)
         get_next_line(fd);
 
     cr_expect_str_eq(get_next_line(fd), \
@@ -41,10 +41,10 @@ Test(get_next_line, loop)
 
 Test(get_next_line, second_file)
 {
-    int fd = open("tests/blag.md", O_RDONLY);
+    int fd = open("tests/blag.txt", O_RDONLY);
     int fd2 = open("tests/gnl.c", O_RDONLY);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 13; i++)
         get_next_line(fd);
     cr_expect_str_eq(get_next_line(fd), \
         "This script copies the ligatures (glyphs and rendering information) "
