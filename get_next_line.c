@@ -41,6 +41,13 @@ static char *append(char *lnbuf, int n, gnl_t *f)
     return newlen;
 }
 
+static void reread(gnl_t *f, int *n, int *readret, int fd)
+{
+    f->ridx = 0;
+    *n = 0;
+    *readret = read(fd, f->rbuf, (int)READ_SIZE);
+}
+
 char *get_next_line(const int fd)
 {
     static gnl_t f;
@@ -48,12 +55,11 @@ char *get_next_line(const int fd)
     int n = 0;
     char *lnbuf = 0;
 
-    if (READ_SIZE < 1) return 0;
+    if ((int)READ_SIZE < 1)
+        return 0;
     while (1) {
         if (readret <= f.ridx) {
-            f.ridx = 0;
-            n = 0;
-            readret = read(fd, f.rbuf, READ_SIZE);
+            reread(&f, &n, &readret, fd);
             if (readret <= 0)
                 return (readret == 0) ? lnbuf : 0;
         }
