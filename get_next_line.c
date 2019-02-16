@@ -30,8 +30,8 @@ static char *append(char *lnbuf, int n, gnl_t *f)
         i++;
     oldlen = i;
     newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
-    while (!newlen)
-        newlen = malloc((oldlen + n + 1) * sizeof(*newlen));
+    if (!newlen)
+        return 0;
     my_strncpy(newlen, lnbuf, oldlen);
     newlen[oldlen + n] = 0;
     my_strncpy(newlen + oldlen, f->rbuf + f->ridx, n);
