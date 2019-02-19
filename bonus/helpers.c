@@ -1,3 +1,9 @@
+/*
+** EPITECH PROJECT, 2019
+** CPE_getnextline_2018
+** File description:
+** something small
+*/
 
 #include "get_next_line.h"
 
